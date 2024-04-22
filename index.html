@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Platformer Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        #game-container {
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platform {
+            width: 200px;
+            height: 20px;
+            background-color: #333;
+            position: absolute;
+        }
+
+        #player {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div class="platform" style="bottom: 100px; left: 100px;"></div>
+        <div class="platform" style="bottom: 200px; left: 300px;"></div>
+        <div class="platform" style="bottom: 300px; left: 500px;"></div>
+        <div id="player"></div>
+    </div>
+
+    <script>
+        const player = document.getElementById("player");
+        let playerX = 50;
+        let playerY = 0;
+        let isJumping = false;
+        let jumpTimer;
+
+        function movePlayer() {
+            player.style.left = playerX + "px";
+            player.style.bottom = playerY + "px";
+        }
+
+        function jump() {
+            if (!isJumping) {
+                isJumping = true;
+                let jumpHeight = 200;
+                jumpTimer = setInterval(function() {
+                    if (jumpHeight === 0) {
+                        clearInterval(jumpTimer);
+                        isJumping = false;
+                    } else {
+                        playerY += 5;
+                        jumpHeight -= 5;
+                    }
+                    movePlayer();
+                }, 20);
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowUp') {
+                jump();
+            }
+        });
+
+        // Check for collisions with platforms
+        setInterval(function() {
+            const platforms = document.querySelectorAll('.platform');
+            platforms.forEach(function(platform) {
+                const rect1 = player.getBoundingClientRect();
+                const rect2 = platform.getBoundingClientRect();
+                if (rect1.bottom >= rect2.top &&
+                    rect1.top <= rect2.bottom &&
+                    rect1.right >= rect2.left &&
+                    rect1.left <= rect2.right) {
+                        // Collision detected, reset player position
+                        playerY = 0;
+                        movePlayer();
+                    }
+            });
+        }, 50);
+    </script>
+</body>
+</html>
